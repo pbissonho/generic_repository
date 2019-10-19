@@ -54,14 +54,14 @@ abstract class ReadOnyRepository<T> implements IRead<T> {
   Future<Either<Failure, List<T>>> getAll() async {
     try {
       var data = await dataClient.getListMap(path);
-      var list = _mapToListModel(data);
+      var list = mapToListModel(data);
       return Right(list);
     } on RestException catch (error) {
       return Left(RestFailure(error.message));
     }
   }
 
-  List<T> _mapToListModel(List<Map<String, dynamic>> data) {
+  List<T> mapToListModel(List<Map<String, dynamic>> data) {
     List<T> models = data.map((data) => fromMap(data)).toList();
     return models;
   }
@@ -69,7 +69,7 @@ abstract class ReadOnyRepository<T> implements IRead<T> {
   Future<Either<Failure, List<T>>> filter(Arguments arguments) async {
     try {
       var data = await dataClient.getListMap(path, arguments: arguments);
-      var list = _mapToListModel(data);
+      var list = mapToListModel(data);
       return Right(list);
     } on RestException catch (error) {
       return Left(RestFailure(error.message));
