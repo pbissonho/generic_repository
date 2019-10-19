@@ -38,7 +38,7 @@ void main() {
 
     try {
       var dataClient = DioDataClient(dio);
-      var data = await dataClient.get("posts/1");
+      await dataClient.get("posts/1");
     } on RestException catch (error) {
       exception = error;
     }

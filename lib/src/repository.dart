@@ -12,15 +12,15 @@ class Updated extends Operation {}
 
 class Deleted extends Operation {}
 
-abstract class IRead<T> {
+abstract class IReadRepository<T> {
   Future<Either<Failure, T>> getById(int id);
 
   Future<Either<Failure, List<T>>> getAll();
 
-  Future<Either<Failure, List<T>>> filter(Arguments arguments);
+  Future<Either<Failure, List<T>>> search(Arguments arguments);
 }
 
-abstract class IWrite<T> {
+abstract class IWriteRepository<T> {
   Future<Either<Failure, Operation>> insert(T model);
 
   Future<Either<Failure, Operation>> update(T model, int id);
@@ -28,9 +28,10 @@ abstract class IWrite<T> {
   Future<Either<Failure, Operation>> delete(int id);
 }
 
-abstract class IRepository<T extends Model> extends IRead<T> with IWrite<T> {}
+abstract class IRepository<T extends Model> extends IReadRepository<T>
+    with IWriteRepository<T> {}
 
-abstract class ReadOnyRepository<T> implements IRead<T> {
+abstract class ReadOnyRepository<T> implements IReadRepository<T> {
   IDataClient dataClient;
   String get path;
   T fromMap(dynamic map);
@@ -53,9 +54,14 @@ abstract class ReadOnyRepository<T> implements IRead<T> {
 
   Future<Either<Failure, List<T>>> getAll() async {
     try {
-      var data = await dataClient.getListMap(path);
-      var list = mapToListModel(data);
-      return Right(list);
+      List<Map<String, dynamic>> data = await dataClient.getListMap(path);
+
+      if (data is List<Map<String, dynamic>>) {
+        var list = mapToListModel(data);
+        return Right(list);
+      } else {
+        return Left(RestFailure("Data not is a List<Map<String, dynamic>>"));
+      }
     } on RestException catch (error) {
       return Left(RestFailure(error.message));
     }
@@ -66,7 +72,7 @@ abstract class ReadOnyRepository<T> implements IRead<T> {
     return models;
   }
 
-  Future<Either<Failure, List<T>>> filter(Arguments arguments) async {
+  Future<Either<Failure, List<T>>> search(Arguments arguments) async {
     try {
       var data = await dataClient.getListMap(path, arguments: arguments);
       var list = mapToListModel(data);
@@ -77,7 +83,7 @@ abstract class ReadOnyRepository<T> implements IRead<T> {
   }
 }
 
-mixin WriteOny<T extends Model> implements IWrite<T> {
+mixin WriteOny<T extends Model> implements IWriteRepository<T> {
   IDataClient dataClient;
   String get path;
 
