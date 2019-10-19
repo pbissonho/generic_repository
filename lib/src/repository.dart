@@ -1,20 +1,31 @@
+import 'package:dartz/dartz.dart';
 import 'data_client.dart';
 import 'model.dart';
+import 'core/error/exceptions.dart';
+import 'core/error/failures.dart';
+
+class Operation {}
+
+class Created extends Operation {}
+
+class Updated extends Operation {}
+
+class Deleted extends Operation {}
 
 abstract class IRead<T> {
-  Future<T> getById(int id);
+  Future<Either<Failure, T>> getById(int id);
 
-  Future<List<T>> getAll();
+  Future<Either<Failure, List<T>>> getAll();
 
-  Future<List<T>> filter(Arguments arguments);
+  Future<Either<Failure, List<T>>> filter(Arguments arguments);
 }
 
 abstract class IWrite<T> {
-  Future<void> insert(T model);
+  Future<Either<Failure, Operation>> insert(T model);
 
-  Future<void> update(T model, int id);
+  Future<Either<Failure, Operation>> update(T model, int id);
 
-  Future<void> delete(int id);
+  Future<Either<Failure, Operation>> delete(int id);
 }
 
 abstract class IRepository<T extends Model> extends IRead<T> with IWrite<T> {}
@@ -28,28 +39,41 @@ abstract class ReadOnyRepository<T> implements IRead<T> {
     this.dataClient = dataClient;
   }
 
-  Future<T> getById(int id) async {
-    var data = await dataClient.get(
-      "$path/$id",
-    );
-
-    return fromMap(data);
+  Future<Either<Failure, T>> getById(int id) async {
+    try {
+      var data = await dataClient.get(
+        "$path/$id",
+      );
+      T model = fromMap(data);
+      return Right(model);
+    } on RestException catch (error) {
+      return Left(RestFailure(error.message));
+    }
   }
 
-  Future<List<T>> getAll() async {
-    var data = await dataClient.getListMap(path);
-    return converteListMapToListModel(data);
+  Future<Either<Failure, List<T>>> getAll() async {
+    try {
+      var data = await dataClient.getListMap(path);
+      var list = _mapToListModel(data);
+      return Right(list);
+    } on RestException catch (error) {
+      return Left(RestFailure(error.message));
+    }
   }
 
-  Future<List<T>> converteListMapToListModel(
-      List<Map<String, dynamic>> data) async {
+  List<T> _mapToListModel(List<Map<String, dynamic>> data) {
     List<T> models = data.map((data) => fromMap(data)).toList();
     return models;
   }
 
-  Future<List<T>> filter(Arguments arguments) async {
-    var data = await dataClient.getListMap(path, arguments: arguments);
-    return converteListMapToListModel(data);
+  Future<Either<Failure, List<T>>> filter(Arguments arguments) async {
+    try {
+      var data = await dataClient.getListMap(path, arguments: arguments);
+      var list = _mapToListModel(data);
+      return Right(list);
+    } on RestException catch (error) {
+      return Left(RestFailure(error.message));
+    }
   }
 }
 
@@ -57,18 +81,33 @@ mixin WriteOny<T extends Model> implements IWrite<T> {
   IDataClient dataClient;
   String get path;
 
-  Future<void> insert(T model) async {
-    await dataClient.post(path, data: model.toJson());
+  Future<Either<Failure, Operation>> insert(T model) async {
+    try {
+      await dataClient.post(path, data: model.toJson());
+      return Right(Created());
+    } on RestException catch (error) {
+      return Left(RestFailure(error.message));
+    }
   }
 
-  Future<void> update(T model, int id) async {
-    await dataClient.put("$path/$id", data: model.toJson());
+  Future<Either<Failure, Operation>> update(T model, int id) async {
+    try {
+      await dataClient.put("$path/$id", data: model.toJson());
+      return Right(Updated());
+    } on RestException catch (error) {
+      return Left(RestFailure(error.message));
+    }
   }
 
-  Future<void> delete(int id) async {
-    await dataClient.delete(
-      "$path/$id",
-    );
+  Future<Either<Failure, Operation>> delete(int id) async {
+    try {
+      await dataClient.delete(
+        "$path/$id",
+      );
+      return Right(Deleted());
+    } on RestException catch (error) {
+      return Left(RestFailure(error.message));
+    }
   }
 }
 
