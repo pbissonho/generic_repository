@@ -2,7 +2,7 @@ import 'package:generic_repository/src/data_client.dart';
 import 'package:generic_repository/src/repository.dart';
 import '../models/user.dart';
 
-class UserRepository extends Repository<User> {
+class UserRepository extends Repository<User, int> {
   UserRepository(IDataClient dataClient) : super(dataClient);
 
   @override

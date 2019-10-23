@@ -1,8 +1,9 @@
 import 'package:dartz/dartz.dart';
 import 'data_client.dart';
-import 'model.dart';
 import 'core/error/exceptions.dart';
 import 'core/error/failures.dart';
+import 'interfaces/model.dart';
+import 'interfaces/query_params.dart';
 
 class Operation {
   final Map<String, dynamic> dataResult;
@@ -22,26 +23,26 @@ class Deleted extends Operation {
   Deleted(Map<String, dynamic> dataResult) : super(dataResult);
 }
 
-abstract class IReadRepository<T> {
-  Future<Either<Failure, T>> getById(int id);
+abstract class IReadRepository<T, Id> {
+  Future<Either<Failure, T>> getById(Id id);
 
   Future<Either<Failure, List<T>>> getAll();
 
   Future<Either<Failure, List<T>>> search(IQueryParams queryParameters);
 }
 
-abstract class IWriteRepository<T> {
+abstract class IWriteRepository<T, Id> {
   Future<Either<Failure, Operation>> insert(T model);
 
-  Future<Either<Failure, Operation>> update(T model, int id);
+  Future<Either<Failure, Operation>> update(T model, Id id);
 
   Future<Either<Failure, Operation>> delete(int id);
 }
 
-abstract class IRepository<T extends Model> extends IReadRepository<T>
-    with IWriteRepository<T> {}
+abstract class IRepository<T extends IModel, Id> extends IReadRepository<T, Id>
+    with IWriteRepository<T, Id> {}
 
-abstract class ReadOnyRepository<T> implements IReadRepository<T> {
+abstract class ReadOnyRepository<T, Id> implements IReadRepository<T, Id> {
   IDataClient dataClient;
   String get path;
   T fromMap(dynamic map);
@@ -50,9 +51,9 @@ abstract class ReadOnyRepository<T> implements IReadRepository<T> {
     this.dataClient = dataClient;
   }
 
-  Future<Either<Failure, T>> getById(int id) async {
+  Future<Either<Failure, T>> getById(Id id) async {
     try {
-      var data = await dataClient.get(
+      var data = await dataClient.read(
         "$path/$id",
       );
       T model = fromMap(data);
@@ -64,7 +65,7 @@ abstract class ReadOnyRepository<T> implements IReadRepository<T> {
 
   Future<Either<Failure, List<T>>> getAll() async {
     try {
-      List<Map<String, dynamic>> data = await dataClient.getListMap(path);
+      List<Map<String, dynamic>> data = await dataClient.readMany(path);
 
       if (data is List<Map<String, dynamic>>) {
         var list = mapToListModel(data);
@@ -85,7 +86,7 @@ abstract class ReadOnyRepository<T> implements IReadRepository<T> {
   Future<Either<Failure, List<T>>> search(IQueryParams queryParameters) async {
     try {
       var data =
-          await dataClient.getListMap(path, queryParameters: queryParameters);
+          await dataClient.readMany(path, queryParameters: queryParameters);
       var list = mapToListModel(data);
       return Right(list);
     } on RestException catch (error) {
@@ -94,22 +95,22 @@ abstract class ReadOnyRepository<T> implements IReadRepository<T> {
   }
 }
 
-mixin WriteOny<T extends Model> implements IWriteRepository<T> {
+mixin WriteOny<T extends IModel, Id> implements IWriteRepository<T, Id> {
   IDataClient dataClient;
   String get path;
 
   Future<Either<Failure, Operation>> insert(T model) async {
     try {
-      var data = await dataClient.post(path, data: model.toJson());
+      var data = await dataClient.create(path, data: model.toJson());
       return Right(Created(data));
     } on RestException catch (error) {
       return Left(RestFailure(error.message));
     }
   }
 
-  Future<Either<Failure, Operation>> update(T model, int id) async {
+  Future<Either<Failure, Operation>> update(T model, Id id) async {
     try {
-      var data = await dataClient.put("$path/$id", data: model.toJson());
+      var data = await dataClient.update("$path/$id", data: model.toJson());
       return Right(Updated(data));
     } on RestException catch (error) {
       return Left(RestFailure(error.message));
@@ -128,12 +129,12 @@ mixin WriteOny<T extends Model> implements IWriteRepository<T> {
   }
 }
 
-abstract class Repository<T extends Model> extends ReadOnyRepository<T>
-    with WriteOny<T> {
+abstract class Repository<T extends IModel, Id> extends ReadOnyRepository<T, Id>
+    with WriteOny<T, Id> {
   Repository(IDataClient dataClient) : super(dataClient);
 }
 
-abstract class WriteOnyRepository<T extends Model> with WriteOny<T> {
+abstract class WriteOnyRepository<T extends IModel, Id> with WriteOny<T, Id> {
   IDataClient dataClient;
   WriteOnyRepository(this.dataClient);
 }

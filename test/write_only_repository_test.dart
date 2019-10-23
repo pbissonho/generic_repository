@@ -21,7 +21,7 @@ void main() async {
   var postJson = json.decode(fixture("post.json"));
 
   test("Insert a model", () async {
-    when(datacliente.post(any)).thenAnswer((_) => Future.value());
+    when(datacliente.create(any)).thenAnswer((_) => Future.value());
 
     var either = await service.insert(Post.fromJson(postJson));
 
@@ -33,7 +33,7 @@ void main() async {
   });
 
   test("Update a model", () async {
-    when(datacliente.put(any)).thenAnswer((_) => Future.value());
+    when(datacliente.update(any)).thenAnswer((_) => Future.value());
 
     var either = await service.update(Post.fromJson(postJson), 2);
 

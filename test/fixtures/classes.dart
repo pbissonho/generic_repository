@@ -1,7 +1,6 @@
 import 'package:generic_repository/generic_repository.dart';
-import 'package:generic_repository/src/model.dart';
 
-class Post extends Model {
+class Post implements IModel {
   int userId;
   int id;
   String title;
@@ -26,7 +25,7 @@ class Post extends Model {
   }
 }
 
-class PostRepository extends Repository<Post> {
+class PostRepository extends Repository<Post, int> {
   PostRepository(IDataClient dataClient) : super(dataClient);
 
   @override
@@ -35,7 +34,7 @@ class PostRepository extends Repository<Post> {
   String get path => "posts";
 }
 
-class PostReadOnyService extends ReadOnyRepository<Post> {
+class PostReadOnyService extends ReadOnyRepository<Post, int> {
   PostReadOnyService(IDataClient dataClient) : super(dataClient);
 
   @override
@@ -44,7 +43,7 @@ class PostReadOnyService extends ReadOnyRepository<Post> {
   String get path => "posts";
 }
 
-class PostWriteOnlyService extends WriteOnyRepository<Post> {
+class PostWriteOnlyService extends WriteOnyRepository<Post, int> {
   PostWriteOnlyService(IDataClient dataClient) : super(dataClient);
   String get path => "posts";
 }

@@ -28,9 +28,9 @@ class Post implements Model {
   }
 }
 
-abstract class IPostRepositort implements IRepository<Post> {}
+abstract class IPostRepository implements IRepository<Post, int> {}
 
-class PostRepository extends Repository<Post> implements IPostRepositort {
+class PostRepository extends Repository<Post, int> implements IPostRepository {
   PostRepository(DioDataClient client) : super(client);
 
   @override
@@ -41,7 +41,7 @@ class PostRepository extends Repository<Post> implements IPostRepositort {
 }
 
 class PostBloc {
-  IPostRepositort _postRepositort;
+  IPostRepository _postRepositort;
   StreamController _controller = StreamController<List<Post>>();
 
   void getPosts() async {

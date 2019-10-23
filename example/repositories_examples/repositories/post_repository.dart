@@ -3,7 +3,7 @@ import 'package:generic_repository/src/repository.dart';
 
 import '../models/post.dart';
 
-class PostRepository extends Repository<Post> {
+class PostRepository extends Repository<Post, int> {
   PostRepository(IDataClient dataClient) : super(dataClient);
 
   @override

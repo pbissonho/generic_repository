@@ -11,7 +11,7 @@ void main() {
 
     var dataClient = DioDataClient(dio);
 
-    var data = await dataClient.getListMap("posts");
+    var data = await dataClient.readMany("posts");
 
     expect(data, isNotNull);
     expect(data, isA<List<Map<String, dynamic>>>());
@@ -24,7 +24,7 @@ void main() {
 
     var dataClient = DioDataClient(dio);
 
-    var data = await dataClient.get("posts/1");
+    var data = await dataClient.read("posts/1");
 
     expect(data, isNotNull);
     expect(data, isA<Map<String, dynamic>>());
@@ -38,7 +38,7 @@ void main() {
 
     try {
       var dataClient = DioDataClient(dio);
-      await dataClient.get("posts/1");
+      await dataClient.read("posts/1");
     } on RestException catch (error) {
       exception = error;
     }

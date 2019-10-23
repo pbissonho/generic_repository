@@ -25,7 +25,7 @@ void main() async {
   });
 
   test("get all data - shoud return a list of data", () async {
-    when(datacliente.getListMap(any)).thenAnswer((_) => Future.value(listMap));
+    when(datacliente.readMany(any)).thenAnswer((_) => Future.value(listMap));
 
     var either = await service.getAll();
     List<Post> posts;
@@ -39,7 +39,7 @@ void main() async {
 
   test("when get all data return a error - shoud return a RestFailure",
       () async {
-    when(datacliente.getListMap(any)).thenThrow(RestException("Error"));
+    when(datacliente.readMany(any)).thenThrow(RestException("Error"));
 
     var either = await service.getAll();
     RestFailure failure;
@@ -54,7 +54,7 @@ void main() async {
 
   test("when get a model by data return a error - shoud return a RestFailure",
       () async {
-    when(datacliente.get(any)).thenThrow(RestException("Error"));
+    when(datacliente.readMany(any)).thenThrow(RestException("Error"));
 
     var either = await service.getById(1);
     RestFailure failure;
