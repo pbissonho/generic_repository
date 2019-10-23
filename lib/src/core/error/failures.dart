@@ -9,7 +9,6 @@ abstract class Failure extends Equatable {
   List<Object> get props => [message];
 }
 
-// General failures
 class RestFailure extends Failure {
   RestFailure(String message) : super(message);
 }
