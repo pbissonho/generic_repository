@@ -1,9 +1,9 @@
 import 'dart:async';
+import 'package:generic_repository/generic_repository.dart';
 import 'package:generic_repository/src/dio_data_client.dart';
-import 'package:generic_repository/src/model.dart';
 import 'package:generic_repository/src/repository.dart';
 
-class Post implements Model {
+class Post implements IModel {
   int userId;
   int id;
   String title;

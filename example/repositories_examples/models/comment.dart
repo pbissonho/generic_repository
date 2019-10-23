@@ -1,6 +1,6 @@
-import 'package:generic_repository/src/model.dart';
+import 'package:generic_repository/generic_repository.dart';
 
-class Comment extends Model {
+class Comment implements IModel {
   int postId;
   int id;
   String name;

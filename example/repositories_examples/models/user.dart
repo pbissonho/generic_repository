@@ -1,6 +1,6 @@
-import 'package:generic_repository/src/model.dart';
+import 'package:generic_repository/generic_repository.dart';
 
-class User extends Model {
+class User implements IModel {
   int id;
   String name;
   String username;
