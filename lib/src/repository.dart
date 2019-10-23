@@ -4,20 +4,30 @@ import 'model.dart';
 import 'core/error/exceptions.dart';
 import 'core/error/failures.dart';
 
-class Operation {}
+class Operation {
+  final Map<String, dynamic> dataResult;
 
-class Created extends Operation {}
+  Operation(this.dataResult);
+}
 
-class Updated extends Operation {}
+class Created extends Operation {
+  Created(Map<String, dynamic> dataResult) : super(dataResult);
+}
 
-class Deleted extends Operation {}
+class Updated extends Operation {
+  Updated(Map<String, dynamic> dataResult) : super(dataResult);
+}
+
+class Deleted extends Operation {
+  Deleted(Map<String, dynamic> dataResult) : super(dataResult);
+}
 
 abstract class IReadRepository<T> {
   Future<Either<Failure, T>> getById(int id);
 
   Future<Either<Failure, List<T>>> getAll();
 
-  Future<Either<Failure, List<T>>> search(Arguments arguments);
+  Future<Either<Failure, List<T>>> search(IQueryParams queryParameters);
 }
 
 abstract class IWriteRepository<T> {
@@ -72,9 +82,10 @@ abstract class ReadOnyRepository<T> implements IReadRepository<T> {
     return models;
   }
 
-  Future<Either<Failure, List<T>>> search(Arguments arguments) async {
+  Future<Either<Failure, List<T>>> search(IQueryParams queryParameters) async {
     try {
-      var data = await dataClient.getListMap(path, arguments: arguments);
+      var data =
+          await dataClient.getListMap(path, queryParameters: queryParameters);
       var list = mapToListModel(data);
       return Right(list);
     } on RestException catch (error) {
@@ -89,8 +100,8 @@ mixin WriteOny<T extends Model> implements IWriteRepository<T> {
 
   Future<Either<Failure, Operation>> insert(T model) async {
     try {
-      await dataClient.post(path, data: model.toJson());
-      return Right(Created());
+      var data = await dataClient.post(path, data: model.toJson());
+      return Right(Created(data));
     } on RestException catch (error) {
       return Left(RestFailure(error.message));
     }
@@ -98,8 +109,8 @@ mixin WriteOny<T extends Model> implements IWriteRepository<T> {
 
   Future<Either<Failure, Operation>> update(T model, int id) async {
     try {
-      await dataClient.put("$path/$id", data: model.toJson());
-      return Right(Updated());
+      var data = await dataClient.put("$path/$id", data: model.toJson());
+      return Right(Updated(data));
     } on RestException catch (error) {
       return Left(RestFailure(error.message));
     }
@@ -107,10 +118,10 @@ mixin WriteOny<T extends Model> implements IWriteRepository<T> {
 
   Future<Either<Failure, Operation>> delete(int id) async {
     try {
-      await dataClient.delete(
+      var data = await dataClient.delete(
         "$path/$id",
       );
-      return Right(Deleted());
+      return Right(Deleted(data));
     } on RestException catch (error) {
       return Left(RestFailure(error.message));
     }

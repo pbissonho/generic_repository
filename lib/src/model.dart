@@ -1,13 +1,8 @@
-import 'utils.dart';
-
 abstract class Model {
   Map<String, dynamic> toJson();
 }
 
-abstract class Arguments {
-  Map<String, dynamic> toJson();
-
-  String getUrlArguments() {
-    return StringUtils.mapToUrlQueryFormat(toJson());
-  }
+abstract class IQueryParams {
+  String toQueryParams();
+  Map<String, dynamic> toMap();
 }

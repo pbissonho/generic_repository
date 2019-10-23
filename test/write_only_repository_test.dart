@@ -25,8 +25,8 @@ void main() async {
 
     var either = await service.insert(Post.fromJson(postJson));
 
-    Operation operation =
-        either.fold<Created>((failure) => null, (operation) => Created());
+    Operation operation = either.fold<Created>(
+        (failure) => null, (operation) => Created({"": ""}));
 
     expect(operation, isNotNull);
     expect(operation, isA<Created>());

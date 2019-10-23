@@ -1,8 +1,9 @@
+import 'dart:async';
 import 'package:generic_repository/src/dio_data_client.dart';
 import 'package:generic_repository/src/model.dart';
 import 'package:generic_repository/src/repository.dart';
 
-class Post extends Model {
+class Post implements Model {
   int userId;
   int id;
   String title;
@@ -27,7 +28,9 @@ class Post extends Model {
   }
 }
 
-class PostRepository extends Repository<Post> {
+abstract class IPostRepositort implements IRepository<Post> {}
+
+class PostRepository extends Repository<Post> implements IPostRepositort {
   PostRepository(DioDataClient client) : super(client);
 
   @override
@@ -35,4 +38,22 @@ class PostRepository extends Repository<Post> {
 
   @override
   String get path => "posts";
+}
+
+class PostBloc {
+  IPostRepositort _postRepositort;
+  StreamController _controller = StreamController<List<Post>>();
+
+  void getPosts() async {
+    var result = await _postRepositort.getAll();
+    result.fold((failure) {
+      _controller.addError(failure.message);
+    }, (posts) {
+      _controller.add(posts);
+    });
+  }
+
+  void dispose() {
+    _controller.close();
+  }
 }

@@ -11,15 +11,19 @@ class DioDataClient implements IDataClient {
   Dio get dioClient => dio;
 
   @override
-  Future<void> delete(String path,
-      {Map<String, dynamic> queryParameters}) async {
-    await dio.delete(path, queryParameters: queryParameters);
+  Future<Map<String, dynamic>> delete(String path,
+      {IQueryParams queryParameters}) async {
+    var response =
+        await dio.delete(path, queryParameters: queryParameters.toMap());
+    return response.data;
   }
 
   @override
-  Future<Map<String, dynamic>> get(String path, {Arguments arguments}) async {
+  Future<Map<String, dynamic>> get(String path,
+      {IQueryParams queryParameters}) async {
     try {
-      var dioResponse = await dio.get("/$path?${arguments?.getUrlArguments()}");
+      var dioResponse =
+          await dio.get("/$path?${queryParameters?.toQueryParams()}");
 
       if (dioResponse.statusCode != 200) {
         throw new RestException("DioResponse status code deve ser 200");
@@ -38,9 +42,10 @@ class DioDataClient implements IDataClient {
 
   @override
   Future<List<Map<String, dynamic>>> getListMap(String path,
-      {Arguments arguments}) async {
+      {IQueryParams queryParameters}) async {
     try {
-      var dioResponse = await dio.get("/$path?${arguments?.getUrlArguments()}");
+      var dioResponse =
+          await dio.get("/$path?${queryParameters?.toQueryParams()}");
 
       if (dioResponse.statusCode != 200) {
         throw new RestException("DioResponse status code deve ser 200");
@@ -54,20 +59,26 @@ class DioDataClient implements IDataClient {
   }
 
   @override
-  Future patch(String path,
-      {data, Map<String, dynamic> queryParameters}) async {
-    await dio.patch(path, data: data, queryParameters: queryParameters);
+  Future<Map<String, dynamic>> patch(String path,
+      {data, IQueryParams queryParameters}) async {
+    var response = await dio.patch(path,
+        data: data, queryParameters: queryParameters.toMap());
+    return response.data;
   }
 
   @override
-  Future<void> post(String path,
+  Future<Map<String, dynamic>> post(String path,
       {data, Map<String, dynamic> queryParameters}) async {
-    await dio.post(path, data: data, queryParameters: queryParameters);
+    var response =
+        await dio.post(path, data: data, queryParameters: queryParameters);
+    return response.data;
   }
 
   @override
-  Future<void> put(String path,
-      {data, Map<String, dynamic> queryParameters}) async {
-    await dio.put(path, data: data, queryParameters: queryParameters);
+  Future<Map<String, dynamic>> put(String path,
+      {data, IQueryParams queryParameters}) async {
+    var response = await dio.put(path,
+        data: data, queryParameters: queryParameters.toMap());
+    return response.data;
   }
 }

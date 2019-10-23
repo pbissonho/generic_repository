@@ -1,19 +1,19 @@
 import 'package:generic_repository/src/model.dart';
 
 abstract class IDataClient {
-  Future<void> patch(String path,
-      {dynamic data, Map<String, dynamic> queryParameters});
+  Future<void> patch(String path, {dynamic data, IQueryParams queryParameters});
 
-  Future<Map<String, dynamic>> get(String path, {Arguments arguments});
+  Future<Map<String, dynamic>> get(String path, {IQueryParams queryParameters});
 
-  Future<void> put(String path,
-      {dynamic data, Map<String, dynamic> queryParameters});
+  Future<Map<String, dynamic>> put(String path,
+      {dynamic data, IQueryParams queryParameters});
 
-  Future<void> delete(String path, {Map<String, dynamic> queryParameters});
+  Future<Map<String, dynamic>> delete(String path,
+      {IQueryParams queryParameters});
 
-  Future<void> post(String path,
+  Future<Map<String, dynamic>> post(String path,
       {dynamic data, Map<String, dynamic> queryParameters});
 
   Future<List<Map<String, dynamic>>> getListMap(String path,
-      {Arguments arguments});
+      {IQueryParams queryParameters});
 }
