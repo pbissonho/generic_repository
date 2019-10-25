@@ -16,7 +16,6 @@ void main() async {
 
   var jsonData = fixture("posts.json");
   var listJsonPostsData = json.decode(jsonData);
-  Map<String, dynamic> postJson = json.decode(fixture("post.json"));
   var listMap = List<Map<String, dynamic>>.from(listJsonPostsData);
 
   setUp(() {
