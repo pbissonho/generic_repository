@@ -7,3 +7,4 @@ export 'src/dio_data_client.dart';
 export 'src/repository.dart';
 export 'src/core/error/failures.dart';
 export 'src/string_extensions.dart';
+export 'src/core/error/exceptions.dart';
