@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:generic_repository/src/core/error/exceptions.dart';
 import 'package:generic_repository/src/dio_data_client.dart';
+import 'package:test/test.dart';
 
 void main() {
   test('get a list map from rest api', () async {

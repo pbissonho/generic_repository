@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 import 'package:generic_repository/generic_repository.dart';
 import 'package:generic_repository/src/core/error/exceptions.dart';
 import 'package:generic_repository/src/data_client.dart';

@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 import 'package:generic_repository/src/data_client.dart';
 import 'package:generic_repository/src/repository.dart';
 import 'package:mockito/mockito.dart';
