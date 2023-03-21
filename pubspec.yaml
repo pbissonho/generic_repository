@@ -8,7 +8,7 @@ environment:
   sdk: ">=2.1.0 <3.0.0"
 
 dependencies:
-  dio: ^3.0.1
+  dio: ">=3.0.1 <6.0.0"
   dartz: ^0.8.6
   equatable: ^1.0.0
   mockito: ^4.1.1
